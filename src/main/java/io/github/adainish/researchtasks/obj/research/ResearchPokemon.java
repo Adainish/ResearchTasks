@@ -1,4 +1,4 @@
-package io.github.adainish.researchtasks.obj;
+package io.github.adainish.researchtasks.obj.research;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
@@ -6,6 +6,7 @@ import com.pixelmonmod.pixelmon.api.registries.PixelmonSpecies;
 import info.pixelmon.repack.org.spongepowered.CommentedConfigurationNode;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.obj.research.ResearchForm;
 
 import java.util.HashMap;
 import java.util.Map;

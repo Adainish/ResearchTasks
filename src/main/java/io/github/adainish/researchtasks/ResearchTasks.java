@@ -2,8 +2,9 @@ package io.github.adainish.researchtasks;
 
 
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.conf.RewardConfig;
 import io.github.adainish.researchtasks.listener.PlayerListener;
-import io.github.adainish.researchtasks.obj.ResearchDex;
+import io.github.adainish.researchtasks.registry.RewardRegistry;
 import io.github.adainish.researchtasks.wrapper.PermissionWrapper;
 import io.github.adainish.researchtasks.wrapper.ResearchWrapper;
 import net.minecraft.server.MinecraftServer;
@@ -24,7 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.stream.Collectors;
 
 
 @Mod("researchtasks")
@@ -44,6 +44,8 @@ public class ResearchTasks {
     public static final Logger log = LogManager.getLogger(MOD_NAME);
     public static PermissionWrapper permissionWrapper;
     public static ResearchWrapper researchWrapper;
+
+    public static RewardRegistry rewardRegistry;
 
     public ResearchTasks() {
         instance = this;
@@ -82,6 +84,7 @@ public class ResearchTasks {
         loadConfigs();
         MinecraftForge.EVENT_BUS.register(new PlayerListener());
         researchWrapper = new ResearchWrapper();
+        rewardRegistry = new RewardRegistry();
     }
 
     public void initDirs() {
@@ -106,12 +109,14 @@ public class ResearchTasks {
     {
         log.warn("Setting up configs");
         Config.getConfig().setup();
+        RewardConfig.getConfig().setup();
     }
 
     public void loadConfigs()
     {
         log.warn("Loading Configs");
         Config.getConfig().load();
+        RewardConfig.getConfig().load();
     }
 
 }

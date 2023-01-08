@@ -1,5 +1,6 @@
 package io.github.adainish.researchtasks.util;
 
+import ca.landonjw.gooeylibs2.api.button.GooeyButton;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.pixelmonmod.pixelmon.api.battles.AttackCategory;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
@@ -10,6 +11,8 @@ import com.pixelmonmod.pixelmon.api.util.helpers.RandomHelper;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.battles.attacks.ImmutableAttack;
 import io.github.adainish.researchtasks.ResearchTasks;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +24,16 @@ public class Util {
         } catch (CommandSyntaxException e) {
             ResearchTasks.log.error(e);
         }
+    }
+
+    public static GooeyButton filler = GooeyButton.builder()
+            .display(new ItemStack(Blocks.GRAY_STAINED_GLASS_PANE, 1))
+            .build();
+
+
+    public static String getResourceLocationStringFromItemStack(ItemStack stack)
+    {
+        return stack.getItem().getRegistryName().toString();
     }
 
     public static boolean hasEvolution(Stats form)

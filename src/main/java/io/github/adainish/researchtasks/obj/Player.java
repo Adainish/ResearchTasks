@@ -8,11 +8,13 @@ import java.util.UUID;
 public class Player {
     public UUID uuid;
     public String username;
-    public ResearchDex researchDex;
 
     public Player(UUID uuid) {
         this.uuid = uuid;
-        this.researchDex = new ResearchDex();
+    }
+
+    public String getName() {
+        return username;
     }
 
     public void setUserName(String name) {

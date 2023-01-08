@@ -4,6 +4,7 @@ import com.pixelmonmod.pixelmon.api.pokemon.species.Species;
 import info.pixelmon.repack.org.spongepowered.CommentedConfigurationNode;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.obj.research.ResearchPokemon;
 
 import java.util.HashMap;
 import java.util.Map;

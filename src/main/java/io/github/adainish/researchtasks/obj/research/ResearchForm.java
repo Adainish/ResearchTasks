@@ -1,4 +1,4 @@
-package io.github.adainish.researchtasks.obj;
+package io.github.adainish.researchtasks.obj.research;
 
 import com.pixelmonmod.pixelmon.api.pokemon.species.Species;
 import com.pixelmonmod.pixelmon.api.pokemon.species.Stats;
