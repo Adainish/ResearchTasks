@@ -8,7 +8,6 @@ import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
 import com.pixelmonmod.pixelmon.api.pokemon.species.Species;
 import com.pixelmonmod.pixelmon.api.pokemon.species.Stats;
 import com.pixelmonmod.pixelmon.api.util.helpers.RandomHelper;
-import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.battles.attacks.ImmutableAttack;
 import io.github.adainish.researchtasks.ResearchTasks;
 import net.minecraft.block.Blocks;
@@ -53,12 +52,6 @@ public class Util {
         atk = RandomHelper.getRandomElementFromCollection(immutableAttacks);
 
         if (atk != null) {
-            System.out.println("Species: %species%, Form: %form%, Attack: %atk%"
-                    .replace("%species%", species.getName())
-                            .replace("%form%", form.getName())
-                            .replace("%atk%", atk.getAttackName()
-                    )
-            );
             return atk.getAttackName();
         }
         return "";
@@ -76,12 +69,6 @@ public class Util {
         atk = RandomHelper.getRandomElementFromCollection(immutableAttacks);
 
         if (atk != null) {
-            System.out.println("Species: %species%, Form: %form%, Attack: %atk%"
-                    .replace("%species%", species.getName())
-                            .replace("%form%", form.getName())
-                            .replace("%atk%", atk.getAttackName()
-                    )
-            );
             return atk.getAttackName();
         }
         return "";
@@ -98,12 +85,6 @@ public class Util {
         }
         atk = RandomHelper.getRandomElementFromCollection(immutableAttacks);
         if (atk != null) {
-            System.out.println("Species: %species%, Form: %form%, Attack: %atk%"
-                    .replace("%species%", species.getName())
-                            .replace("%form%", form.getName())
-                            .replace("%atk%", atk.getAttackName()
-                    )
-            );
             return atk.getAttackName();
         }
         return "";

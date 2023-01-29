@@ -9,6 +9,7 @@ public class ResearchTask {
     public String taskActionType;
     public int taskCount = 0;
     public int taskProgress = 0;
+    public boolean pointsRedeemed = false;
 
     public ResearchTask()
     {
@@ -24,4 +25,7 @@ public class ResearchTask {
     {
         return taskCount - taskProgress;
     }
+
+    public void addPoints()
+    {}
 }

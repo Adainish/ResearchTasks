@@ -24,6 +24,7 @@ public class ResearchPokemon {
         if (PixelmonSpecies.get(identifier).isPresent()) {
             this.pokemon = PokemonBuilder.builder().species(PixelmonSpecies.get(identifier).get().getValueUnsafe()).build();
         } else this.pokemon = PokemonBuilder.builder().species(PixelmonSpecies.MAGIKARP.getValueUnsafe()).build();
+        loadForms();
     }
 
     public void loadForms()
@@ -40,6 +41,11 @@ public class ResearchPokemon {
             ResearchForm researchForm = new ResearchForm(pokemon.getSpecies(), nodestring);
             formsList.put(nodestring, researchForm);
         }
+    }
+
+    public void sync()
+    {
+        formsList.values().forEach(ResearchForm::sync);
     }
 
 }

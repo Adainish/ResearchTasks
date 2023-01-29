@@ -15,7 +15,7 @@ public class ResearchDex {
 
     public ResearchDex()
     {
-
+        loadFromConfig();
     }
 
     public void loadFromConfig()
@@ -31,13 +31,15 @@ public class ResearchDex {
 
             ResearchPokemon dropPokemon = new ResearchPokemon(nodestring);
             researchPokemonList.put(dropPokemon.pokemon.getSpecies(), dropPokemon);
-
         }
     }
 
     public void syncTasks()
     {
-        ResearchDex cachedDex = ResearchTasks.researchWrapper.cachedResearchDex;
+        researchPokemonList.forEach((key, value) -> {
+            value.sync();
+            researchPokemonList.put(key, value);
+        });
 
     }
 
