@@ -114,10 +114,6 @@ public class RewardRegistry
                     .title(Util.formattedString(reward.getDisplayTitle()))
                     .lore(Util.formattedArrayList(lore))
                     .display(reward.getDisplayItem())
-                    .onClick(b ->
-                    {
-
-                    })
                     .build();
             buttons.add(button);
         }

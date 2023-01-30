@@ -82,6 +82,9 @@ public class Config extends Configurable
                             }
                             this.get().node("Pokemon", sp.getName(), form.getName(), "Tasks", taskType.name(), i, "Requirement").set(1 + i * 2);
                             this.get().node("Pokemon", sp.getName(), form.getName(), "Tasks", taskType.name(), i, "Points").set((i + 10) / 3);
+
+                            this.get().node("Pokemon", sp.getName(), form.getName(), "Levels", i, "RequiredPoints").set(i * 100);
+                            this.get().node("Pokemon", sp.getName(), form.getName(), "Levels", i, "RewardIds").set(Arrays.asList(""));
                         }
                     }
 

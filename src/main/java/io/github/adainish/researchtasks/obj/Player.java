@@ -1,5 +1,6 @@
 package io.github.adainish.researchtasks.obj;
 
+import ca.landonjw.gooeylibs2.implementation.tasks.Task;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.storage.PlayerStorage;
 
@@ -7,7 +8,8 @@ import java.util.UUID;
 
 public class Player {
     public UUID uuid;
-    public String username;
+    public String username = "";
+    public ResearchDex researchDex = null;
 
     public Player(UUID uuid) {
         this.uuid = uuid;
@@ -30,5 +32,25 @@ public class Player {
     public void savePlayer()
     {
         PlayerStorage.savePlayer(this);
+    }
+
+    public ResearchDex getOrCreateResearchDex()
+    {
+        if (researchDex != null)
+            return researchDex;
+        ResearchDex researchDex = new ResearchDex();
+        this.researchDex = researchDex;
+        return researchDex;
+    }
+
+    public void getAndUpdateDex()
+    {
+        if (researchDex == null)
+            getOrCreateResearchDex();
+        Task.builder().execute(t ->
+        {
+            this.researchDex.syncTasks();
+        }).iterations(1).interval(0).build();
+
     }
 }

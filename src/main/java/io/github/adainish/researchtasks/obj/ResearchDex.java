@@ -30,7 +30,7 @@ public class ResearchDex {
             String nodestring = obj.toString();
 
             ResearchPokemon dropPokemon = new ResearchPokemon(nodestring);
-            researchPokemonList.put(dropPokemon.pokemon.getSpecies(), dropPokemon);
+            researchPokemonList.put(dropPokemon.getPokemon().getSpecies(), dropPokemon);
         }
     }
 
@@ -42,5 +42,22 @@ public class ResearchDex {
         });
 
     }
+
+    public void open()
+    {
+
+    }
+
+    //main gui
+
+    //dynamic species
+
+    //dynamic form
+
+    //dynamic tasks
+
+    //completion
+
+    //reward redeemal
 
 }

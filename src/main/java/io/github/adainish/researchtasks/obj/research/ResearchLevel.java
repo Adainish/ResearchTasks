@@ -12,26 +12,26 @@ import java.util.UUID;
 
 public class ResearchLevel {
 
-    public int level;
-    public String species;
-    public String form;
-    public int requiredPoints = 1;
-    public List<String> rewardIDs = new ArrayList <>();
-    public boolean claimed = false;
+    private int level;
+    private String species;
+    private String form;
+    private int requiredPoints = 1;
+    private List<String> rewardIDs = new ArrayList <>();
+    private boolean claimed = false;
 
     public ResearchLevel(int level, String species, String form)
     {
-        this.level = level;
-        this.species = species;
-        this.form = form;
+        this.setLevel(level);
+        this.setSpecies(species);
+        this.setForm(form);
         sync();
     }
 
     public void sync()
     {
-        this.requiredPoints = Config.getConfig().get().node("Pokemon", species, form, "Levels", String.valueOf(level), "").getInt();
+        this.setRequiredPoints(Config.getConfig().get().node("Pokemon", getSpecies(), getForm(), "Levels", String.valueOf(getLevel()), "RequiredPoints").getInt());
         try {
-            this.rewardIDs = Config.getConfig().get().node("Pokemon", species, form, "Levels", String.valueOf(level), "").getList(TypeToken.get(String.class));
+            this.setRewardIDs(Config.getConfig().get().node("Pokemon", getSpecies(), getForm(), "Levels", String.valueOf(getLevel()), "RewardIDs").getList(TypeToken.get(String.class)));
         } catch (SerializationException e) {
             e.printStackTrace();
         }
@@ -39,12 +39,12 @@ public class ResearchLevel {
 
     public boolean completed(int progress)
     {
-        return requiredPoints <= progress;
+        return getRequiredPoints() <= progress;
     }
 
     public boolean handoutRewards(UUID uuid)
     {
-        if (claimed)
+        if (isClaimed())
             return false;
 
         for (Reward r:getRewards()) {
@@ -55,16 +55,64 @@ public class ResearchLevel {
 
     public boolean claimed()
     {
-        return claimed;
+        return isClaimed();
     }
 
     public List <Reward> getRewards()
     {
         List<Reward> rewards = new ArrayList <>();
-        for (String s:rewardIDs) {
+        for (String s: getRewardIDs()) {
             if (ResearchTasks.rewardRegistry.rewardCache.containsKey(s))
                 rewards.add(ResearchTasks.rewardRegistry.rewardCache.get(s));
         }
         return  rewards;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
+    public String getForm() {
+        return form;
+    }
+
+    public void setForm(String form) {
+        this.form = form;
+    }
+
+    public int getRequiredPoints() {
+        return requiredPoints;
+    }
+
+    public void setRequiredPoints(int requiredPoints) {
+        this.requiredPoints = requiredPoints;
+    }
+
+    public List <String> getRewardIDs() {
+        return rewardIDs;
+    }
+
+    public void setRewardIDs(List <String> rewardIDs) {
+        this.rewardIDs = rewardIDs;
+    }
+
+    public boolean isClaimed() {
+        return claimed;
+    }
+
+    public void setClaimed(boolean claimed) {
+        this.claimed = claimed;
     }
 }

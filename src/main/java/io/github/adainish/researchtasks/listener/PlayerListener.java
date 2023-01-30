@@ -23,6 +23,7 @@ public class PlayerListener {
             if (player == null)
                 throw new NullPointerException("Player null even after making fresh player data? That's not good! Please contact the developer with more info!");
             player.setUserName(event.getPlayer().getName().getUnformattedComponentText());
+            player.getAndUpdateDex();
             player.savePlayer();
         } catch (NullPointerException e) {
             ResearchTasks.log.log(Level.ERROR, e);
