@@ -1,9 +1,13 @@
 package io.github.adainish.researchtasks;
 
 
+import com.pixelmonmod.pixelmon.Pixelmon;
+import io.github.adainish.researchtasks.cmd.Command;
 import io.github.adainish.researchtasks.conf.Config;
 import io.github.adainish.researchtasks.conf.RewardConfig;
 import io.github.adainish.researchtasks.listener.PlayerListener;
+import io.github.adainish.researchtasks.listener.ResearchListener;
+import io.github.adainish.researchtasks.obj.Player;
 import io.github.adainish.researchtasks.registry.RewardRegistry;
 import io.github.adainish.researchtasks.wrapper.PermissionWrapper;
 import io.github.adainish.researchtasks.wrapper.ResearchWrapper;
@@ -16,6 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -67,6 +72,7 @@ public class ResearchTasks {
     public void onCommandRegistry(RegisterCommandsEvent event)
     {
         permissionWrapper = new PermissionWrapper();
+        event.getDispatcher().register(Command.getCommand());
     }
 
 
@@ -80,11 +86,17 @@ public class ResearchTasks {
     {
         log.info("Finalising set up");
         server = ServerLifecycleHooks.getCurrentServer();
-        setupConfigs();
-        loadConfigs();
+        reload();
         MinecraftForge.EVENT_BUS.register(new PlayerListener());
-        researchWrapper = new ResearchWrapper();
-        rewardRegistry = new RewardRegistry();
+        Pixelmon.EVENT_BUS.register(new ResearchListener());
+    }
+
+    @SubscribeEvent
+    public void onServerShutDown(FMLServerStoppingEvent event)
+    {
+        for (Player p:researchWrapper.playerHashMap.values()) {
+            p.shutdownSave();
+        }
     }
 
     public void initDirs() {
@@ -102,6 +114,12 @@ public class ResearchTasks {
         log.warn("Reload Requested, This might take a moment! Prepare for incoming lag!");
         setupConfigs();
         loadConfigs();
+        if (rewardRegistry == null)
+            rewardRegistry = new RewardRegistry();
+        else researchWrapper.loadResearchDex();
+        if (researchWrapper == null)
+            researchWrapper = new ResearchWrapper();
+        else researchWrapper.loadResearchDex();
     }
 
 

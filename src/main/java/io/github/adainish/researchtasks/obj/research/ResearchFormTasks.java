@@ -36,7 +36,6 @@ public class ResearchFormTasks
                 continue;
             }
             String nodestring = obj.toString();
-
             ResearchTask researchTask = new ResearchTask(Integer.parseInt(nodestring), species, form, taskType);
             researchTasks.add(researchTask);
         }

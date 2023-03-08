@@ -8,8 +8,8 @@ import java.util.UUID;
 
 public class Player {
     public UUID uuid;
-    public String username = "";
-    public ResearchDex researchDex = null;
+    public String username;
+    public ResearchDex researchDex;
 
     public Player(UUID uuid) {
         this.uuid = uuid;
@@ -24,9 +24,21 @@ public class Player {
     }
 
     public void updateCache() {
-        if (ResearchTasks.researchWrapper.playerHashMap.containsKey(this.uuid))
-            ResearchTasks.researchWrapper.playerHashMap.replace(this.uuid, this);
-        else ResearchTasks.researchWrapper.playerHashMap.put(this.uuid, this);
+        ResearchTasks.researchWrapper.playerHashMap.put(this.uuid, this);
+    }
+
+    public void sendMessage(String s)
+    {
+        if (s == null)
+            return;
+        if (s.isEmpty())
+            return;
+        //send message
+    }
+
+    public void shutdownSave()
+    {
+        PlayerStorage.savePlayerShutDown(this);
     }
 
     public void savePlayer()
@@ -36,17 +48,18 @@ public class Player {
 
     public ResearchDex getOrCreateResearchDex()
     {
-        if (researchDex != null)
-            return researchDex;
-        ResearchDex researchDex = new ResearchDex();
-        this.researchDex = researchDex;
-        return researchDex;
+        if (this.researchDex != null)
+            return this.researchDex;
+        this.researchDex = ResearchTasks.researchWrapper.preloadedDex;
+        return this.researchDex;
     }
 
     public void getAndUpdateDex()
     {
-        if (researchDex == null)
+        if (researchDex == null) {
             getOrCreateResearchDex();
+            return;
+        }
         Task.builder().execute(t ->
         {
             this.researchDex.syncTasks();

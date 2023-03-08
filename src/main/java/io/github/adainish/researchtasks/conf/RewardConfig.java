@@ -38,7 +38,7 @@ public class RewardConfig extends Configurable
     }
 
     public String getConfigName() {
-        return "rewards.hocon";
+        return "rewards.yaml";
     }
 
     public RewardConfig() {

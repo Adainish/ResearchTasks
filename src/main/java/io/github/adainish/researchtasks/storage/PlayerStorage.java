@@ -36,6 +36,35 @@ public class PlayerStorage {
         }
     }
 
+    public static void savePlayerShutDown(Player player) {
+
+        File dir = ResearchTasks.playerStorageDir;
+        dir.mkdirs();
+
+        File file = new File(dir, "%uuid%.json".replaceAll("%uuid%", String.valueOf(player.uuid)));
+        Gson gson = Adapters.PRETTY_MAIN_GSON;
+        JsonReader reader = null;
+        try {
+            reader = new JsonReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (reader == null) {
+            ResearchTasks.log.error("Something went wrong attempting to read the Player Data");
+            return;
+        }
+
+
+        try {
+            FileWriter writer = new FileWriter(file);
+            writer.write(gson.toJson(player));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void savePlayer(Player player) {
 
         File dir = ResearchTasks.playerStorageDir;

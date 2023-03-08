@@ -3,6 +3,8 @@ package io.github.adainish.researchtasks.obj.research;
 import com.pixelmonmod.pixelmon.api.registries.PixelmonSpecies;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.obj.Player;
+import io.github.adainish.researchtasks.obj.ResearchDex;
 
 import java.util.UUID;
 
@@ -25,7 +27,6 @@ public class ResearchTask {
         this.setSpecies(species);
         this.setForm(form);
         this.setTaskType(taskType);
-        sync();
     }
 
     public boolean completed() {
@@ -36,12 +37,16 @@ public class ResearchTask {
         return getTaskCount() - getTaskProgress();
     }
 
-    public boolean complete(UUID uuid) {
+    public void increaseCounter()
+    {
+        this.taskProgress += 1;
+    }
+
+    public boolean complete() {
         if (!completed())
             return false;
         if (isPointsRedeemed())
             return false;
-        addPoints(uuid);
         this.setPointsRedeemed(true);
         return true;
     }
@@ -51,7 +56,7 @@ public class ResearchTask {
     {
         //add points to form
         if (PixelmonSpecies.get(species).isPresent() && PixelmonSpecies.get(species).get().getValue().isPresent())
-        ResearchTasks.researchWrapper.playerHashMap.get(uuid).researchDex.researchPokemonList.get(PixelmonSpecies.get(species).get().getValue().get()).getFormsList().get(form).increasePoints(points);
+        ResearchTasks.researchWrapper.playerHashMap.get(uuid).researchDex.researchPokemonList.get(PixelmonSpecies.get(species).get().getValue().get().getName()).getFormsList().get(form).increasePoints(points);
     }
 
     public void sync()

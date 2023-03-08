@@ -1,7 +1,6 @@
 package io.github.adainish.researchtasks.obj.research;
 
-import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
-import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
+import com.pixelmonmod.pixelmon.api.pokemon.species.Species;
 import com.pixelmonmod.pixelmon.api.registries.PixelmonSpecies;
 import info.pixelmon.repack.org.spongepowered.CommentedConfigurationNode;
 import io.github.adainish.researchtasks.ResearchTasks;
@@ -11,18 +10,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResearchPokemon {
-    private String configIdentifier;
-    private Pokemon pokemon;
+    public String configIdentifier;
+    public String pokemonSpeciesName;
+    public int dexNumber = 0;
 
-    private HashMap <String, ResearchForm> formsList = new HashMap<>();
+    public HashMap <String, ResearchForm> formsList = new HashMap<>();
 
 
     public ResearchPokemon(String identifier)
     {
         this.setConfigIdentifier(identifier);
+        Species species = PixelmonSpecies.MAGIKARP.getValueUnsafe();
         if (PixelmonSpecies.get(identifier).isPresent()) {
-            this.setPokemon(PokemonBuilder.builder().species(PixelmonSpecies.get(identifier).get().getValueUnsafe()).build());
-        } else this.setPokemon(PokemonBuilder.builder().species(PixelmonSpecies.MAGIKARP.getValueUnsafe()).build());
+            species = PixelmonSpecies.get(identifier).get().getValueUnsafe();
+            this.setPokemonSpeciesName(species.getName());
+        }
+        this.setDexNumber(species.getDex());
         loadForms();
     }
 
@@ -36,8 +39,8 @@ public class ResearchPokemon {
                 continue;
             }
             String nodestring = obj.toString();
-
-            ResearchForm researchForm = new ResearchForm(getPokemon().getSpecies(), nodestring);
+            Species species = PixelmonSpecies.get(getPokemonSpeciesName()).get().getValueUnsafe();
+            ResearchForm researchForm = new ResearchForm(species, nodestring);
             getFormsList().put(nodestring, researchForm);
         }
     }
@@ -55,12 +58,12 @@ public class ResearchPokemon {
         this.configIdentifier = configIdentifier;
     }
 
-    public Pokemon getPokemon() {
-        return pokemon;
+    public String getPokemonSpeciesName() {
+        return pokemonSpeciesName;
     }
 
-    public void setPokemon(Pokemon pokemon) {
-        this.pokemon = pokemon;
+    public void setPokemonSpeciesName(String pokemonSpeciesName) {
+        this.pokemonSpeciesName = pokemonSpeciesName;
     }
 
     public HashMap <String, ResearchForm> getFormsList() {
@@ -69,5 +72,13 @@ public class ResearchPokemon {
 
     public void setFormsList(HashMap <String, ResearchForm> formsList) {
         this.formsList = formsList;
+    }
+
+    public int getDexNumber() {
+        return dexNumber;
+    }
+
+    public void setDexNumber(int dexNumber) {
+        this.dexNumber = dexNumber;
     }
 }

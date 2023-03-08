@@ -6,32 +6,25 @@ import com.pixelmonmod.api.SpecificationTypeAdapter;
 import com.pixelmonmod.api.pokemon.PokemonSpecification;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonFactory;
-import com.pixelmonmod.pixelmon.api.pokemon.species.Species;
-import com.pixelmonmod.pixelmon.api.pokemon.species.SpeciesTypeAdapter;
-import com.pixelmonmod.pixelmon.api.pokemon.species.Stats;
-import com.pixelmonmod.pixelmon.api.pokemon.species.StatsTypeAdapter;
-import com.pixelmonmod.pixelmon.api.pokemon.species.moves.Moves;
-import com.pixelmonmod.pixelmon.api.pokemon.species.typeadapters.MovesTypeAdapter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 public class Adapters {
     public static Gson PRETTY_MAIN_GSON = new GsonBuilder()
             .setPrettyPrinting()
+            .excludeFieldsWithModifiers(Modifier.TRANSIENT)
             .registerTypeAdapter(Pokemon.class, new PokemonAdapter())
             .registerTypeAdapter(CompoundNBT.class, new NBTAdapter())
             .registerTypeAdapter(PokemonSpecification.class, new SpecificationTypeAdapter(PokemonSpecification.class))
             .registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
-            .registerTypeAdapter(Stats.class, new StatsTypeAdapter())
-            .registerTypeAdapter(Moves.class, new MovesTypeAdapter())
-            .registerTypeAdapter(Species.class, new SpeciesTypeAdapter())
             .create();
 
 
-    public static class NBTAdapter implements JsonSerializer <CompoundNBT>, JsonDeserializer <CompoundNBT>
+    public static class NBTAdapter implements JsonSerializer<CompoundNBT>, JsonDeserializer<CompoundNBT>
     {
         @Override
         public CompoundNBT deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
@@ -77,8 +70,6 @@ public class Adapters {
             return context.serialize(src.writeToNBT(new CompoundNBT()).toString(), String.class);
         }
     }
-
-
 
     public static class ItemStackAdapter implements JsonSerializer <ItemStack>, JsonDeserializer <ItemStack>
     {
