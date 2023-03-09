@@ -44,8 +44,8 @@ public class Config extends Configurable
                                 case Status_Move_Used:
                                 {
                                     String actionKey = Util.getRandomStatusAttack(sp, form);
-                                    this.get().node("Pokemon", sp.getName(), form.getName(), "Tasks", taskType.name(), i, "Enabled").set(!actionKey.isEmpty());
-                                    this.get().node("Pokemon", sp.getName(), form.getName(), "Tasks", taskType.name(), i, "ActionKey").set(Util.getRandomStatusAttack(sp, form));
+                                    this.get().node("Pokemon", sp.getName(), form.getName(), "Tasks", taskType.name(), String.valueOf(i), "Enabled").set(!actionKey.isEmpty());
+                                    this.get().node("Pokemon", sp.getName(), form.getName(), "Tasks", taskType.name(), String.valueOf(i), "ActionKey").set(Util.getRandomStatusAttack(sp, form));
                                     break;
                                 }
                                 case Special_Move_Used:
