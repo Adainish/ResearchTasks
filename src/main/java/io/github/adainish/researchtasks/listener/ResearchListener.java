@@ -27,8 +27,6 @@ public class ResearchListener
         if (player != null) {
             ResearchDex researchDex = player.researchDex;
             researchDex.update(player, event.getPokemon().getPokemon(), TaskTypes.Caught.name(), "");
-            player.researchDex = researchDex;
-            player.updateCache();
         }
     }
     //move listener
@@ -59,8 +57,6 @@ public class ResearchListener
                 return;
 
             researchDex.update(player, event.user.pokemon, parsed, event.attack.getAttackName());
-            player.researchDex = researchDex;
-            player.updateCache();
         }
     }
     //breed listener
@@ -72,8 +68,6 @@ public class ResearchListener
             ResearchDex researchDex = player.researchDex;
             researchDex.update(player, event.getParentOne(), TaskTypes.Breed.name(), "");
             researchDex.update(player, event.getChildGiven(), TaskTypes.Breed.name(), "");
-            player.researchDex = researchDex;
-            player.updateCache();
         }
     }
     //hatched
@@ -84,8 +78,6 @@ public class ResearchListener
         if (player != null) {
             ResearchDex researchDex = player.researchDex;
             researchDex.update(player, event.getPokemon(), TaskTypes.Hatched.name(), "");
-            player.researchDex = researchDex;
-            player.updateCache();
         }
     }
     //defeated
@@ -101,8 +93,6 @@ public class ResearchListener
                 if (wrapper.pokemon == null)
                     continue;
                 researchDex.update(player, wrapper.pokemon, TaskTypes.Defeated.name(), "");
-                player.researchDex = researchDex;
-                player.updateCache();
             }
 
         }
@@ -115,8 +105,6 @@ public class ResearchListener
         if (player != null) {
             ResearchDex researchDex = player.researchDex;
             researchDex.update(player, event.getPokemon(), TaskTypes.Evolved.name(), "");
-            player.researchDex = researchDex;
-            player.updateCache();
         }
     }
 }

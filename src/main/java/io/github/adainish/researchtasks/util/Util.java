@@ -12,9 +12,13 @@ import com.pixelmonmod.pixelmon.battles.attacks.ImmutableAttack;
 import io.github.adainish.researchtasks.ResearchTasks;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Util {
     public static void runCommand(String cmd) {
@@ -33,6 +37,14 @@ public class Util {
     public static String getResourceLocationStringFromItemStack(ItemStack stack)
     {
         return stack.getItem().getRegistryName().toString();
+    }
+
+    public static String underScoreReformattedString(String s)
+    {
+        if (s == null)
+            return "";
+        s = s.replaceAll("_", " ");
+        return s;
     }
 
     public static boolean hasEvolution(Stats form)
@@ -95,6 +107,20 @@ public class Util {
             return "";
         return s.replaceAll("&", "§");
     }
+
+    public static void send(UUID uuid, String message) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null)
+            return;
+        if (server.getPlayerList().getPlayerByUUID(uuid) == null)
+            return;
+        if (message == null)
+            return;
+        if (message.isEmpty())
+            return;
+        server.getPlayerList().getPlayerByUUID(uuid).sendMessage(new StringTextComponent((message).replaceAll("&([0-9a-fk-or])", "\u00a7$1")), uuid);
+    }
+
 
     public static List <String> formattedArrayList(List<String> list) {
 

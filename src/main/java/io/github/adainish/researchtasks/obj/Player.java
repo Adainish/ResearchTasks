@@ -3,6 +3,7 @@ package io.github.adainish.researchtasks.obj;
 import ca.landonjw.gooeylibs2.implementation.tasks.Task;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.storage.PlayerStorage;
+import io.github.adainish.researchtasks.util.Util;
 
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class Player {
             return;
         if (s.isEmpty())
             return;
-        //send message
+        Util.send(uuid, s);
     }
 
     public void shutdownSave()
