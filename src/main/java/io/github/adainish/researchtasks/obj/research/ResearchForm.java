@@ -9,12 +9,9 @@ import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.conf.Config;
 import io.github.adainish.researchtasks.enumerations.TaskTypes;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class ResearchForm {
+public class ResearchForm implements Cloneable{
     public String species;
     public String form;
 
@@ -22,6 +19,18 @@ public class ResearchForm {
     public List<ResearchLevel> researchLevels = new ArrayList <>();
     public int progressPoints = 0;
 
+    public ResearchForm(String species, String form, List<ResearchFormTasks> copiedResearchTasks, List<ResearchLevel> copiedResearchLevels, int progressPoints)
+    {
+        this.species = species;
+        this.form = form;
+        List<ResearchFormTasks> tasks = new ArrayList <>(copiedResearchTasks);
+        List<ResearchLevel> levels = new ArrayList <>(copiedResearchLevels);
+        Collections.copy(tasks, copiedResearchTasks);
+        Collections.copy(levels, copiedResearchLevels);
+        this.researchTasks = tasks;
+        this.researchLevels = levels;
+        this.progressPoints = 0;
+    }
 
     public ResearchForm(Species species, String formID)
     {

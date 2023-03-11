@@ -31,7 +31,7 @@ public class ResearchLevel {
     {
         this.setRequiredPoints(Config.getConfig().get().node("Pokemon", getSpecies(), getForm(), "Levels", String.valueOf(getLevel()), "RequiredPoints").getInt());
         try {
-            this.setRewardIDs(Config.getConfig().get().node("Pokemon", getSpecies(), getForm(), "Levels", String.valueOf(getLevel()), "RewardIDs").getList(TypeToken.get(String.class)));
+            this.setRewardIDs(Config.getConfig().get().node("Pokemon", getSpecies(), getForm(), "Levels", String.valueOf(getLevel()), "RewardIds").getList(TypeToken.get(String.class)));
         } catch (SerializationException e) {
             e.printStackTrace();
         }
@@ -65,7 +65,7 @@ public class ResearchLevel {
             if (ResearchTasks.rewardRegistry.rewardCache.containsKey(s))
                 rewards.add(ResearchTasks.rewardRegistry.rewardCache.get(s));
         }
-        return  rewards;
+        return rewards;
     }
 
     public int getLevel() {

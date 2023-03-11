@@ -9,13 +9,12 @@ import io.github.adainish.researchtasks.conf.Config;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResearchPokemon {
+public class ResearchPokemon implements Cloneable {
     public String configIdentifier;
     public String pokemonSpeciesName;
     public int dexNumber = 0;
 
     public HashMap <String, ResearchForm> formsList = new HashMap<>();
-
 
     public ResearchPokemon(String identifier)
     {

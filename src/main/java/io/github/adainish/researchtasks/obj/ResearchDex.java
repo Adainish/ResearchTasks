@@ -17,12 +17,16 @@ import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
 import com.pixelmonmod.pixelmon.api.registries.PixelmonItems;
 import com.pixelmonmod.pixelmon.api.util.helpers.SpriteItemHelper;
 import info.pixelmon.repack.org.spongepowered.CommentedConfigurationNode;
+import info.pixelmon.repack.org.spongepowered.serialize.SerializationException;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.conf.GUIConfig;
+import io.github.adainish.researchtasks.conf.LanguageConfig;
 import io.github.adainish.researchtasks.enumerations.TaskTypes;
 import io.github.adainish.researchtasks.obj.research.*;
 import io.github.adainish.researchtasks.storage.PlayerStorage;
 import io.github.adainish.researchtasks.util.Util;
+import io.leangen.geantyref.TypeToken;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -38,7 +42,7 @@ public class ResearchDex {
 
     public ResearchDex()
     {
-        loadFromConfig();
+
     }
 
     public void loadFromConfig()
@@ -68,36 +72,40 @@ public class ResearchDex {
 
     public void update(Player player, Pokemon pokemon, String tasktype, String actiontype)
     {
-        if (researchPokemonList.containsKey(pokemon.getSpecies().getName()))
-        {
-            if (researchPokemonList.get(pokemon.getSpecies().getName()).formsList.containsKey(pokemon.getForm().getName()))
+        try {
+            if (this.researchPokemonList.containsKey(pokemon.getSpecies().getName()))
             {
-                researchPokemonList.get(pokemon.getSpecies().getName()).formsList.get(pokemon.getForm().getName()).researchTasks.forEach(t -> {
-                    for (ResearchTask r:t.researchTasks) {
-                        if (!r.getTaskActionType().equalsIgnoreCase(actiontype))
-                            continue;
-                        if (!r.getTaskType().equalsIgnoreCase(tasktype))
-                            continue;
-                        if (!r.completed())
-                        {
-                            r.increaseCounter();
-                        }
-                        if (!r.isPointsRedeemed()) {
-                            if (r.complete()) {
-                                researchPokemonList.get(pokemon.getSpecies().getName()).formsList.get(pokemon.getForm().getName()).increasePoints(r.getPoints());
-                                player.sendMessage("&7You received &a%points% level points &7for &e%pokemon% %form%'s &7research level!"
-                                        .replace("%points%", String.valueOf(r.getPoints()))
-                                        .replace("%pokemon%", pokemon.getSpecies().getName())
-                                        .replace("%form%", pokemon.getForm().getName())
-                                );
+                if (this.researchPokemonList.get(pokemon.getSpecies().getName()).formsList.containsKey(pokemon.getForm().getName()))
+                {
+                    this.researchPokemonList.get(pokemon.getSpecies().getName()).formsList.get(pokemon.getForm().getName()).researchTasks.forEach(t -> {
+                        for (ResearchTask r:t.researchTasks) {
+                            if (!r.getTaskActionType().equalsIgnoreCase(actiontype))
+                                continue;
+                            if (!r.getTaskType().equalsIgnoreCase(tasktype))
+                                continue;
+                            if (!r.completed())
+                            {
+                                r.increaseCounter();
+                            }
+                            if (!r.isPointsRedeemed()) {
+                                if (r.complete()) {
+                                    this.researchPokemonList.get(pokemon.getSpecies().getName()).formsList.get(pokemon.getForm().getName()).increasePoints(r.getPoints());
+                                    player.sendMessage(LanguageConfig.getConfig().get().node("Messages", "Research", "ResearchPoints").getString()
+                                            .replace("%points%", String.valueOf(r.getPoints()))
+                                            .replace("%pokemon%", pokemon.getSpecies().getName())
+                                            .replace("%form%", pokemon.getForm().getName())
+                                    );
+                                }
                             }
                         }
-                    }
-                });
-                save(player);
+                    });
+                    cache(player);
+                }
             }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
         }
-
     }
 
     public ItemStack getStackFromTask(TaskTypes taskType)
@@ -174,10 +182,21 @@ public class ResearchDex {
     //dynamic species
     public List <Button> speciesButtonList()
     {
+        String pokemonColourCode = "&";
+        if (LanguageConfig.getConfig().get().node("MainMenu", "PokemonColourCode").getString() != null)
+            pokemonColourCode = pokemonColourCode + LanguageConfig.getConfig().get().node("MainMenu", "PokemonColourCode").getString();
+        else pokemonColourCode = "&b";
         List<Button> buttons = new ArrayList <>();
+        List<String> pokemonLore = new ArrayList <>();
+        try {
+            pokemonLore = GUIConfig.getConfig().get().node("MainMenu", "PokemonLore").getList(TypeToken.get(String.class));
+        } catch (SerializationException e) {
+            pokemonLore = new ArrayList <>();
+        }
         for (ResearchPokemon researchPokemon:sortedList()) {
             GooeyButton button = GooeyButton.builder()
-                    .title(Util.formattedString(researchPokemon.getPokemonSpeciesName()))
+                    .title(Util.formattedString(pokemonColourCode + researchPokemon.getPokemonSpeciesName()))
+                    .lore(Util.formattedArrayList(pokemonLore))
                     .display(SpriteItemHelper.getPhoto(getPokemonFromDex(researchPokemon.getPokemonSpeciesName())))
                     .onClick(b ->
                     {
@@ -193,7 +212,7 @@ public class ResearchDex {
     {
         List<Button> buttons = new ArrayList <>();
         for (ResearchForm researchForm:researchPokemon.getFormsList().values()) {
-            String title = "&5%species% %form%".replace("%species%", researchForm.species).replace("%form%", researchForm.getForm());
+            String title = LanguageConfig.getConfig().get().node("GUI", "FormTitle").getString().replace("%species%", researchForm.species).replace("%form%", researchForm.getForm());
             GooeyButton button = GooeyButton.builder()
                     .title(Util.formattedString(title))
                     .display(SpriteItemHelper.getPhoto(researchForm.getPokemon()))
@@ -213,13 +232,13 @@ public class ResearchDex {
         List<Button> buttons = new ArrayList <>();
         for (ResearchFormTasks formTask:form.getResearchTasks()) {
             GooeyButton button = GooeyButton.builder()
-                    .title(Util.formattedString("%species% %form% %task%"
+                    .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "FormTaskTitle").getString()
                             .replace("%species%", formTask.species)
                             .replace("%form%", formTask.form)
                             .replace("%task%", underScoreReformattedString(formTask.taskType))))
                     .display(getStackFromTask(TaskTypes.valueOf(formTask.taskType)))
                     .onClick(b -> {
-                        UIManager.openUIForcefully(b.getPlayer(), TasksMenu(formTask));
+                        UIManager.openUIForcefully(b.getPlayer(), TasksMenu(form, formTask));
                     })
                     .build();
             buttons.add(button);
@@ -240,7 +259,7 @@ public class ResearchDex {
         List<Button> buttons = new ArrayList <>();
         for (ResearchTask researchTask:formTasks.researchTasks) {
             GooeyButton button = GooeyButton.builder()
-                    .title(Util.formattedString("&b%species% &5%form% &e%actiontype% &a%tasktype% &f%progress% &7/ &f%count%"
+                    .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "TaskTitle").getString()
                             .replace("%progress%", String.valueOf(researchTask.getTaskProgress()))
                             .replace("%count%", String.valueOf(researchTask.getTaskCount()))
                             .replace("%totalleft%", String.valueOf(researchTask.getTaskCount()))
@@ -263,13 +282,13 @@ public class ResearchDex {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
         LinkedPageButton previous = LinkedPageButton.builder()
                 .display(new ItemStack(PixelmonItems.trade_holder_left))
-                .title("Previous Page")
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "PreviousButtonTitle").getString()))
                 .linkType(LinkType.Previous)
                 .build();
 
         LinkedPageButton next = LinkedPageButton.builder()
                 .display(new ItemStack(PixelmonItems.trade_holder_right))
-                .title("Next Page")
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "NextButtonTitle").getString()))
                 .linkType(LinkType.Next)
                 .build();
 
@@ -278,18 +297,18 @@ public class ResearchDex {
         template = ChestTemplate.builder(5)
                 .border(0, 0, 5, 9, filler())
                 .rectangle(1, 1, 3, 7, placeHolderButton)
-                .set(0, 3, previous)
-                .set(0, 5, next)
+                .set(GUIConfig.getConfig().get().node("MainMenu", "PreviousButtonPosition").getInt(), previous)
+                .set(GUIConfig.getConfig().get().node("MainMenu", "NextButtonPosition").getInt(), next)
                 .build();
 
-        return PaginationHelper.createPagesFromPlaceholders(template, speciesButtonList(), LinkedPage.builder().template(template));
+        return PaginationHelper.createPagesFromPlaceholders(template, speciesButtonList(), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("MainMenu", "Title").getString())).template(template));
     }
 
     public LinkedPage FormsMenu(ResearchPokemon researchPokemon)
     {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
         GooeyButton back = GooeyButton.builder()
-                .title(Util.formattedString("&eClick to go back"))
+                .title(Util.formattedString(GUIConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
                 .display(new ItemStack(PixelmonItems.eject_button))
                 .onClick(b -> {
                     UIManager.openUIForcefully(b.getPlayer(), MainMenu());
@@ -298,17 +317,17 @@ public class ResearchDex {
         Template template = null;
         template = ChestTemplate.builder(5)
                 .border(0, 0, 5, 9, filler())
-                .set(0, 0, back)
+                .set(GUIConfig.getConfig().get().node("FormsMenu", "BackButtonPosition").getInt(), back)
                 .line(LineType.HORIZONTAL, 1, 1, 7, placeHolderButton)
                 .build();
 
-        return PaginationHelper.createPagesFromPlaceholders(template, formButtonList(researchPokemon), LinkedPage.builder().template(template));
+        return PaginationHelper.createPagesFromPlaceholders(template, formButtonList(researchPokemon), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("FormsMenu", "Title").getString())).template(template));
     }
 
     public LinkedPage ResearchFormsTasksMenu(ResearchForm researchForm)
     {
         GooeyButton back = GooeyButton.builder()
-                .title(Util.formattedString("&eClick to go back"))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
                 .display(new ItemStack(PixelmonItems.eject_button))
                 .onClick(b -> {
                     UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm));
@@ -320,31 +339,31 @@ public class ResearchDex {
         Template template = null;
         template = ChestTemplate.builder(5)
                 .border(0, 0, 5, 9, filler())
-                .set(0, 0, back)
-                .line(LineType.HORIZONTAL, 1, 1, 7, placeHolderButton)
+                .set(GUIConfig.getConfig().get().node("ResearchFormTaskTypeMenu", "BackButtonPosition").getInt(), back)
+                .rectangle(1, 1, 2, 7, placeHolderButton)
                 .build();
 
-        return PaginationHelper.createPagesFromPlaceholders(template, formTasksButtonList(researchForm), LinkedPage.builder().template(template));
+        return PaginationHelper.createPagesFromPlaceholders(template, formTasksButtonList(researchForm), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("ResearchFormTaskTypeMenuMenu", "Title").getString())).template(template));
     }
 
-    public LinkedPage TasksMenu(ResearchFormTasks researchFormTasks)
+    public LinkedPage TasksMenu(ResearchForm researchForm, ResearchFormTasks researchFormTasks)
     {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
         GooeyButton back = GooeyButton.builder()
-                .title(Util.formattedString("&eClick to go back"))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
                 .display(new ItemStack(PixelmonItems.eject_button))
                 .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), MainMenu());
+                    UIManager.openUIForcefully(b.getPlayer(), ResearchFormsTasksMenu(researchForm));
                 })
                 .build();
         Template template = null;
         template = ChestTemplate.builder(5)
                 .border(0, 0, 5, 9, filler())
-                .set(0, 0, back)
+                .set(GUIConfig.getConfig().get().node("TasksMenu", "BackButtonPosition").getInt(), back)
                 .line(LineType.HORIZONTAL, 1, 1, 7, placeHolderButton)
                 .build();
 
-        return PaginationHelper.createPagesFromPlaceholders(template, taskButtonList(researchFormTasks), LinkedPage.builder().template(template));
+        return PaginationHelper.createPagesFromPlaceholders(template, taskButtonList(researchFormTasks), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("TasksMenu", "Title").getString())).template(template));
     }
 
     //level buttons
@@ -358,16 +377,16 @@ public class ResearchDex {
             {
                 if (rl.claimed())
                 {
-                    lore.add("&4You've already claimed these rewards.");
+                    lore.add(LanguageConfig.getConfig().get().node("GUI", "RewardClaimedLore").getString());
                 } else {
-                    lore.add("&bYou can claim the rewards for this level!");
+                    lore.add(LanguageConfig.getConfig().get().node("GUI", "RewardAvailableLore").getString());
                 }
             } else {
-                lore.add("&7You need to obtain more points to claim the rewards for this level!");
+                lore.add(LanguageConfig.getConfig().get().node("GUI", "RewardNotReadyLore").getString());
             }
 
             GooeyButton button = GooeyButton.builder()
-                    .title(Util.formattedString("&bLevel %level% &e%currentpoints% &7/ &e%pointsneeded%"
+                    .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "LevelTitleLore").getString()
                             .replace("%level%", String.valueOf(rl.getLevel()))
                             .replace("%currentpoints%", String.valueOf(form.progressPoints)))
                             .replace("%pointsneeded%", String.valueOf(rl.getRequiredPoints()))
@@ -380,8 +399,14 @@ public class ResearchDex {
                                 Player player = PlayerStorage.getPlayer(b.getPlayer().getUniqueID());
                                 if (player != null) {
                                     rl.handoutRewards(b.getPlayer().getUniqueID());
-                                    rl.setClaimed(true);
-                                    save(player);
+                                    if (rl.handoutRewards(b.getPlayer().getUniqueID()))
+                                    {
+                                        rl.setClaimed(true);
+                                        save(player);
+                                    } else {
+                                        player.sendMessage(LanguageConfig.getConfig().get().node("GUI", "FailedRewards").getString());
+                                    }
+
                                 } else {
                                     ResearchTasks.log.error("Could not hand out rewards for %p% with uuid: %uuid%, player data could not be found"
                                             .replace("%p%", b.getPlayer().getName().getUnformattedComponentText())
@@ -398,6 +423,12 @@ public class ResearchDex {
         return buttons;
     }
 
+    public void cache(Player player)
+    {
+        player.researchDex = this;
+        player.updateCache();
+    }
+
     public void save(Player player)
     {
         player.researchDex = this;
@@ -409,32 +440,32 @@ public class ResearchDex {
     {
         Template template = null;
         GooeyButton back = GooeyButton.builder()
-                .title(Util.formattedString("&eClick to go back"))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
                 .display(new ItemStack(PixelmonItems.eject_button))
                 .onClick(b -> {
                     UIManager.openUIForcefully(b.getPlayer(), MainMenu());
                 })
                 .build();
         GooeyButton levels = GooeyButton.builder()
-                .title(Util.formattedString("&bView Research Level"))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "ViewResearchLevelTitle").getString()))
                 .display(new ItemStack(Items.EXPERIENCE_BOTTLE))
                 .onClick(b -> {
                     UIManager.openUIForcefully(b.getPlayer(), ResearchFormsLevelMenu(researchForm));
                 })
                 .build();
         GooeyButton forms = GooeyButton.builder().display(new ItemStack(PixelmonItems.rainbow_badge))
-                .title(Util.formattedString("&aView Research Tasks"))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "ViewResearchTaskTitle").getString()))
                 .onClick(b -> {
                     UIManager.openUIForcefully(b.getPlayer(), ResearchFormsTasksMenu(researchForm));
                 })
                 .build();
         template = ChestTemplate.builder(1)
-                .set(0, 3, levels)
-                .set(0, 0, back)
-                .set(0, 5, forms)
+                .set(GUIConfig.getConfig().get().node("OptionMenu", "LevelsButtonPosition").getInt(), levels)
+                .set(GUIConfig.getConfig().get().node("OptionMenu", "BackButtonPosition").getInt(), back)
+                .set(GUIConfig.getConfig().get().node("OptionMenu", "FormsButtonPosition").getInt(), forms)
                 .fill(filler())
                 .build();
-        return GooeyPage.builder().template(template).build();
+        return GooeyPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("OptionMenu", "Title").getString())).template(template).build();
     }
     //level gui
     public LinkedPage ResearchFormsLevelMenu(ResearchForm researchForm)
@@ -442,7 +473,7 @@ public class ResearchDex {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
 
         GooeyButton back = GooeyButton.builder()
-                .title(Util.formattedString("&eClick to go back"))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
                 .display(new ItemStack(PixelmonItems.eject_button))
                 .onClick(b -> {
                     UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm));
@@ -453,10 +484,10 @@ public class ResearchDex {
         template = ChestTemplate.builder(5)
                 .border(0, 0, 5, 9, filler())
                 .line(LineType.HORIZONTAL, 1, 1, 7, placeHolderButton)
-                .set(0, 0, back)
+                .set(GUIConfig.getConfig().get().node("LevelsMenu", "BackButtonPosition").getInt(), back)
                 .build();
 
-        return PaginationHelper.createPagesFromPlaceholders(template, formLevelButtonList(researchForm), LinkedPage.builder().template(template));
+        return PaginationHelper.createPagesFromPlaceholders(template, formLevelButtonList(researchForm), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("LevelsMenu", "Title").getString())).template(template));
     }
 
 }

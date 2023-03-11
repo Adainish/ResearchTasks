@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.obj.Player;
 import io.github.adainish.researchtasks.storage.PlayerStorage;
+import io.github.adainish.researchtasks.util.Util;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.StringTextComponent;
@@ -27,6 +28,7 @@ public class Command
                 })
                 .then(Commands.literal("reload")
                         .executes(cc -> {
+                            cc.getSource().sendFeedback(new StringTextComponent(Util.formattedString("&aReloaded the config data and files, please check your server console for any issues!")), true);
                             ResearchTasks.instance.reload();
                             return 1;
                         })

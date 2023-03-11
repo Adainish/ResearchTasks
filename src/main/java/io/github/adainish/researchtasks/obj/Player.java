@@ -51,7 +51,8 @@ public class Player {
     {
         if (this.researchDex != null)
             return this.researchDex;
-        this.researchDex = ResearchTasks.researchWrapper.preloadedDex;
+        this.researchDex = new ResearchDex();
+        this.researchDex.loadFromConfig();
         return this.researchDex;
     }
 
@@ -61,10 +62,7 @@ public class Player {
             getOrCreateResearchDex();
             return;
         }
-        Task.builder().execute(t ->
-        {
-            this.researchDex.syncTasks();
-        }).iterations(1).interval(0).build();
+        this.researchDex.syncTasks();
 
     }
 }

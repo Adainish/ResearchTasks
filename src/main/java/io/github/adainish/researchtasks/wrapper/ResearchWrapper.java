@@ -14,10 +14,12 @@ public class ResearchWrapper {
     public ResearchWrapper()
     {
         preloadedDex = new ResearchDex();
+        preloadedDex.loadFromConfig();
     }
 
     public void loadResearchDex()
     {
         this.preloadedDex = new ResearchDex();
+        this.preloadedDex.loadFromConfig();
     }
 }

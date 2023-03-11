@@ -1,14 +1,18 @@
 package io.github.adainish.researchtasks;
 
 
+import ca.landonjw.gooeylibs2.implementation.tasks.Task;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import io.github.adainish.researchtasks.cmd.Command;
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.conf.GUIConfig;
+import io.github.adainish.researchtasks.conf.LanguageConfig;
 import io.github.adainish.researchtasks.conf.RewardConfig;
 import io.github.adainish.researchtasks.listener.PlayerListener;
 import io.github.adainish.researchtasks.listener.ResearchListener;
 import io.github.adainish.researchtasks.obj.Player;
 import io.github.adainish.researchtasks.registry.RewardRegistry;
+import io.github.adainish.researchtasks.runnables.PlayerDexSyncRunnable;
 import io.github.adainish.researchtasks.wrapper.PermissionWrapper;
 import io.github.adainish.researchtasks.wrapper.ResearchWrapper;
 import net.minecraft.server.MinecraftServer;
@@ -36,9 +40,9 @@ import java.io.File;
 public class ResearchTasks {
     public static ResearchTasks instance;
     public static final String MOD_NAME = "Research Tasks";
-    public static final String VERSION = "1.0.0-Beta";
+    public static final String VERSION = "1.0.1-Beta";
     public static final String AUTHORS = "Winglet";
-    public static final String YEAR = "2022";
+    public static final String YEAR = "2023";
 
     public static MinecraftServer server;
 
@@ -89,6 +93,7 @@ public class ResearchTasks {
         reload();
         MinecraftForge.EVENT_BUS.register(new PlayerListener());
         Pixelmon.EVENT_BUS.register(new ResearchListener());
+        Task.builder().execute(new PlayerDexSyncRunnable()).interval(20 * 60).infinite().build();
     }
 
     @SubscribeEvent
@@ -116,7 +121,7 @@ public class ResearchTasks {
         loadConfigs();
         if (rewardRegistry == null)
             rewardRegistry = new RewardRegistry();
-        else researchWrapper.loadResearchDex();
+        else rewardRegistry.loadRegistry();
         if (researchWrapper == null)
             researchWrapper = new ResearchWrapper();
         else researchWrapper.loadResearchDex();
@@ -128,6 +133,8 @@ public class ResearchTasks {
         log.warn("Setting up configs");
         Config.getConfig().setup();
         RewardConfig.getConfig().setup();
+        LanguageConfig.getConfig().setup();
+        GUIConfig.getConfig().setup();
     }
 
     public void loadConfigs()
@@ -135,6 +142,8 @@ public class ResearchTasks {
         log.warn("Loading Configs");
         Config.getConfig().load();
         RewardConfig.getConfig().load();
+        LanguageConfig.getConfig().load();
+        GUIConfig.getConfig().load();
     }
 
 }

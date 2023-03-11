@@ -3,6 +3,7 @@ package io.github.adainish.researchtasks.obj.research;
 import info.pixelmon.repack.org.spongepowered.CommentedConfigurationNode;
 import io.github.adainish.researchtasks.ResearchTasks;
 import io.github.adainish.researchtasks.conf.Config;
+import io.github.adainish.researchtasks.enumerations.TaskTypes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,7 +25,6 @@ public class ResearchFormTasks
         this.taskType = taskType;
         loadResearchTasks();
     }
-
 
     public void loadResearchTasks()
     {

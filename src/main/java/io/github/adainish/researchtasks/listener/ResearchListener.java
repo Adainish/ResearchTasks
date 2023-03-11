@@ -99,8 +99,10 @@ public class ResearchListener
     }
     //evolved
     @SubscribeEvent
-    public void onEvolutionEvent(EvolveEvent.Post event)
+    public void onEvolutionEvent(EvolveEvent.Pre event)
     {
+        if (event.isCanceled())
+            return;
         Player player = PlayerStorage.getPlayer(event.getPlayer().getUniqueID());
         if (player != null) {
             ResearchDex researchDex = player.researchDex;
