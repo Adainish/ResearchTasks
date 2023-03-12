@@ -37,10 +37,15 @@ public class ResearchListener
             return;
         if (event.user.getTrainerOwner() != null)
             return;
+        if (event.user.isRaidPokemon())
+            return;
+
         Player player = PlayerStorage.getPlayer(event.user.getPlayerOwner().getUniqueID());
         if (player != null) {
             ResearchDex researchDex = player.researchDex;
             String parsed = "";
+            if (event.getAttack() == null || event.getAttack().getAttackCategory() == null)
+                return;
             switch (event.getAttack().getAttackCategory())
             {
                 case STATUS:
