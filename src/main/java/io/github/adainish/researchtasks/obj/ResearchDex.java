@@ -29,10 +29,12 @@ import io.github.adainish.researchtasks.util.Util;
 import io.leangen.geantyref.TypeToken;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.github.adainish.researchtasks.util.Util.underScoreReformattedString;
 
@@ -115,42 +117,74 @@ public class ResearchDex {
         {
             case Evolved:
             {
-                itemStack = new ItemStack(PixelmonItems.ever_stone);
+                Item item = PixelmonItems.ever_stone;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "EvolvedButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Physical_Move_Used:
             {
-                itemStack = new ItemStack(PixelmonItems.ruby_sword);
+                Item item = PixelmonItems.ruby_sword;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "PhysicalMovesButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Special_Move_Used:
             {
-                itemStack = new ItemStack(PixelmonItems.crystal_sword);
+                Item item = PixelmonItems.crystal_sword;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "SpecialMovesButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Status_Move_Used:
             {
-                itemStack = new ItemStack(PixelmonItems.star_piece);
+                Item item = PixelmonItems.star_piece;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "StatusMovesButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Breed:
             {
-                itemStack = new ItemStack(PixelmonItems.destiny_knot);
+                Item item = PixelmonItems.destiny_knot;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "BreedButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Caught:
             {
-                itemStack = new ItemStack(PixelmonItems.poke_ball);
+                Item item = PixelmonItems.poke_ball;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "CaughtButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Hatched:
             {
-                itemStack = new ItemStack(PixelmonItems.lucky_egg);
+                Item item = PixelmonItems.lucky_egg;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "HatchedButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             case Defeated:
             {
-                itemStack = new ItemStack(PixelmonItems.power_weight);
+                Item item = PixelmonItems.power_weight;
+                String parsed = GUIConfig.getConfig().get().node("Buttons", "DefeatedButton").getString();
+                if (parsed != null && Util.getItemFromString(parsed) != null)
+                    item = Util.getItemFromString(parsed);
+                itemStack = new ItemStack(item);
                 break;
             }
             default:
@@ -176,7 +210,97 @@ public class ResearchDex {
 
     public void open(ServerPlayerEntity playerEntity)
     {
-        UIManager.openUIForcefully(playerEntity, MainMenu());
+        UIManager.openUIForcefully(playerEntity, MainMenu(defaultRef()));
+    }
+
+    public boolean isInGen(int dex, AtomicReference <String> argRef)
+    {
+        boolean bool = false;
+        switch (argRef.get()) {
+            case "Gen1": {
+                if (dex > 0 && dex <= 151)
+                    bool = true;
+                break;
+            }
+            case "Gen2": {
+                if (dex > 151 && dex <= 251)
+                    bool = true;
+                break;
+            }
+            case "Gen3": {
+                if (dex > 251 && dex <= 386)
+                    bool = true;
+                break;
+            }
+            case "Gen4": {
+                if (dex > 386 && dex <= 493)
+                    bool = true;
+                break;
+            }
+            case "Gen5": {
+                if (dex > 493 && dex <= 649)
+                    bool = true;
+                break;
+            }
+            case "Gen6": {
+                if (dex > 649 && dex <= 721)
+                    bool = true;
+                break;
+            }
+            case "Gen7": {
+                if (dex > 721 && dex <= 809)
+                    bool = true;
+                break;
+            }
+            case "Gen8": {
+                if (dex > 809 && dex <= 905)
+                    bool = true;
+                break;
+            }
+            case "Gen9": {
+                if (dex > 905 && dex <= 1010)
+                    bool = true;
+                break;
+            }
+            case "Default": {
+                bool = true;
+                break;
+            }
+            default: {
+                bool = false;
+            }
+        }
+        return bool;
+    }
+
+    public List <Button> speciesSortableButtonList(AtomicReference <String> argRef)
+    {
+        String pokemonColourCode = "&";
+        if (LanguageConfig.getConfig().get().node("MainMenu", "PokemonColourCode").getString() != null)
+            pokemonColourCode = pokemonColourCode + LanguageConfig.getConfig().get().node("MainMenu", "PokemonColourCode").getString();
+        else pokemonColourCode = "&b";
+        List<Button> buttons = new ArrayList <>();
+        List<String> pokemonLore = new ArrayList <>();
+        try {
+            pokemonLore = GUIConfig.getConfig().get().node("MainMenu", "PokemonLore").getList(TypeToken.get(String.class));
+        } catch (SerializationException e) {
+            pokemonLore = new ArrayList <>();
+        }
+
+        for (ResearchPokemon researchPokemon:sortedList()) {
+            if (isInGen(researchPokemon.dexNumber, argRef)) {
+                GooeyButton button = GooeyButton.builder()
+                        .title(Util.formattedString(pokemonColourCode + researchPokemon.getPokemonSpeciesName()))
+                        .lore(Util.formattedArrayList(pokemonLore))
+                        .display(SpriteItemHelper.getPhoto(getPokemonFromDex(researchPokemon.getPokemonSpeciesName())))
+                        .onClick(b ->
+                                UIManager.openUIForcefully(b.getPlayer(), FormsMenu(researchPokemon)))
+                        .build();
+                buttons.add(button);
+            }
+        }
+
+        return buttons;
     }
 
     //dynamic species
@@ -216,9 +340,7 @@ public class ResearchDex {
             GooeyButton button = GooeyButton.builder()
                     .title(Util.formattedString(title))
                     .display(SpriteItemHelper.getPhoto(researchForm.getPokemon()))
-                    .onClick(b -> {
-                        UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm));
-                    })
+                    .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm)))
                     .build();
             buttons.add(button);
         }
@@ -237,9 +359,7 @@ public class ResearchDex {
                             .replace("%form%", formTask.form)
                             .replace("%task%", underScoreReformattedString(formTask.taskType))))
                     .display(getStackFromTask(TaskTypes.valueOf(formTask.taskType)))
-                    .onClick(b -> {
-                        UIManager.openUIForcefully(b.getPlayer(), TasksMenu(form, formTask));
-                    })
+                    .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), TasksMenu(form, formTask)))
                     .build();
             buttons.add(button);
         }
@@ -250,6 +370,72 @@ public class ResearchDex {
         return GooeyButton.builder()
                 .display(new ItemStack(Blocks.GRAY_STAINED_GLASS_PANE, 1))
                 .build();
+    }
+
+    public ItemStack getTasksStack()
+    {
+        Item i = PixelmonItems.rainbow_badge;
+
+        String parsed = GUIConfig.getConfig().get().node("Buttons", "ResearchTasksButton").getString();
+        if (parsed != null && Util.getItemFromString(parsed) != null)
+            i = Util.getItemFromString(parsed);
+
+        return new ItemStack(i);
+    }
+
+    public ItemStack getLevelStack()
+    {
+        Item i = Items.EXPERIENCE_BOTTLE;
+
+        String parsed = GUIConfig.getConfig().get().node("Buttons", "ResearchLevelButton").getString();
+        if (parsed != null && Util.getItemFromString(parsed) != null)
+            i = Util.getItemFromString(parsed);
+
+        return new ItemStack(i);
+    }
+
+    public ItemStack getPreviousButtonStack()
+    {
+        Item i = PixelmonItems.trade_holder_left;
+
+        String parsed = GUIConfig.getConfig().get().node("Buttons", "PreviousPageButton").getString();
+        if (parsed != null && Util.getItemFromString(parsed) != null)
+            i = Util.getItemFromString(parsed);
+
+        return new ItemStack(i);
+    }
+
+    public ItemStack getNextButtonStack()
+    {
+        Item i = PixelmonItems.trade_holder_right;
+
+        String parsed = GUIConfig.getConfig().get().node("Buttons", "NextPageButton").getString();
+        if (parsed != null && Util.getItemFromString(parsed) != null)
+            i = Util.getItemFromString(parsed);
+
+        return new ItemStack(i);
+    }
+
+    public ItemStack getBackButtonStack()
+    {
+        Item i = PixelmonItems.eject_button;
+
+        String parsed = GUIConfig.getConfig().get().node("Buttons", "BackButton").getString();
+        if (parsed != null && Util.getItemFromString(parsed) != null)
+            i = Util.getItemFromString(parsed);
+
+        return new ItemStack(i);
+    }
+
+    public ItemStack getFilterButtonStack()
+    {
+        Item i = Items.PURPLE_DYE;
+
+        String parsed = GUIConfig.getConfig().get().node("Buttons", "GenerationFilterButton").getString();
+        if (parsed != null && Util.getItemFromString(parsed) != null)
+            i = Util.getItemFromString(parsed);
+
+        return new ItemStack(i);
     }
 
 
@@ -277,41 +463,108 @@ public class ResearchDex {
 
     //Main Menu using species buttons
 
-    public LinkedPage MainMenu()
+    public LinkedPage MainMenu(AtomicReference <String> type)
     {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
         LinkedPageButton previous = LinkedPageButton.builder()
-                .display(new ItemStack(PixelmonItems.trade_holder_left))
+                .display(getPreviousButtonStack())
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "PreviousButtonTitle").getString()))
                 .linkType(LinkType.Previous)
                 .build();
 
         LinkedPageButton next = LinkedPageButton.builder()
-                .display(new ItemStack(PixelmonItems.trade_holder_right))
+                .display(getNextButtonStack())
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "NextButtonTitle").getString()))
                 .linkType(LinkType.Next)
                 .build();
 
 
+        GooeyButton typeArg = GooeyButton.builder()
+                .display(getFilterButtonStack())
+                .title(Util.formattedString("&7%type%".replaceAll("%type%", type.get())))
+                .onClick(buttonAction -> {
+                    switch (type.get())
+                    {
+                        case "Default":
+                        {
+                            type.set("Gen1");
+                            break;
+                        }
+                        case "Gen1":
+                        {
+                            type.set("Gen2");
+                            break;
+                        }
+                        case "Gen2":
+                        {
+                            type.set("Gen3");
+                            break;
+                        }
+                        case "Gen3":
+                        {
+                            type.set("Gen4");
+                            break;
+                        }
+                        case "Gen4":
+                        {
+                            type.set("Gen5");
+                            break;
+                        }
+                        case "Gen5":
+                        {
+                            type.set("Gen6");
+                            break;
+                        }
+                        case "Gen6":
+                        {
+                            type.set("Gen7");
+                            break;
+                        }
+                        case "Gen7":
+                        {
+                            type.set("Gen8");
+                            break;
+                        }
+                        case "Gen8":
+                        {
+                            type.set("Gen9");
+                            break;
+                        }
+                        case "Gen9":
+                        {
+                            type.set("Default");
+                            break;
+                        }
+                    }
+                    UIManager.openUIForcefully(buttonAction.getPlayer(),  MainMenu(type));
+                })
+                .build();
+
         Template template = null;
         template = ChestTemplate.builder(5)
                 .border(0, 0, 5, 9, filler())
                 .rectangle(1, 1, 3, 7, placeHolderButton)
+                .set(GUIConfig.getConfig().get().node("MainMenu", "FilterButtonPosition").getInt(), typeArg)
                 .set(GUIConfig.getConfig().get().node("MainMenu", "PreviousButtonPosition").getInt(), previous)
                 .set(GUIConfig.getConfig().get().node("MainMenu", "NextButtonPosition").getInt(), next)
                 .build();
 
-        return PaginationHelper.createPagesFromPlaceholders(template, speciesButtonList(), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("MainMenu", "Title").getString())).template(template));
+        return PaginationHelper.createPagesFromPlaceholders(template, speciesSortableButtonList(type), LinkedPage.builder().title(Util.formattedString(GUIConfig.getConfig().get().node("MainMenu", "Title").getString())).template(template));
+    }
+
+    public AtomicReference<String> defaultRef()
+    {
+        return new AtomicReference<>("Default");
     }
 
     public LinkedPage FormsMenu(ResearchPokemon researchPokemon)
     {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
         GooeyButton back = GooeyButton.builder()
-                .title(Util.formattedString(GUIConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
-                .display(new ItemStack(PixelmonItems.eject_button))
+                .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
+                .display(getBackButtonStack())
                 .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), MainMenu());
+                    UIManager.openUIForcefully(b.getPlayer(), MainMenu(defaultRef()));
                 })
                 .build();
         Template template = null;
@@ -328,10 +581,8 @@ public class ResearchDex {
     {
         GooeyButton back = GooeyButton.builder()
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
-                .display(new ItemStack(PixelmonItems.eject_button))
-                .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm));
-                })
+                .display(getBackButtonStack())
+                .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm)))
                 .build();
 
         PlaceholderButton placeHolderButton = new PlaceholderButton();
@@ -351,10 +602,8 @@ public class ResearchDex {
         PlaceholderButton placeHolderButton = new PlaceholderButton();
         GooeyButton back = GooeyButton.builder()
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
-                .display(new ItemStack(PixelmonItems.eject_button))
-                .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), ResearchFormsTasksMenu(researchForm));
-                })
+                .display(getBackButtonStack())
+                .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), ResearchFormsTasksMenu(researchForm)))
                 .build();
         Template template = null;
         template = ChestTemplate.builder(5)
@@ -391,7 +640,7 @@ public class ResearchDex {
                             .replace("%currentpoints%", String.valueOf(form.progressPoints)))
                             .replace("%pointsneeded%", String.valueOf(rl.getRequiredPoints()))
                     )
-                    .display(new ItemStack(Items.EXPERIENCE_BOTTLE))
+                    .display(getLevelStack())
                     .lore(Util.formattedArrayList(lore))
                     .onClick(b -> {
                         if (!rl.claimed()) {
@@ -441,23 +690,18 @@ public class ResearchDex {
         Template template = null;
         GooeyButton back = GooeyButton.builder()
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
-                .display(new ItemStack(PixelmonItems.eject_button))
-                .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), MainMenu());
-                })
+                .display(getBackButtonStack())
+                .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), MainMenu(defaultRef())))
                 .build();
         GooeyButton levels = GooeyButton.builder()
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "ViewResearchLevelTitle").getString()))
-                .display(new ItemStack(Items.EXPERIENCE_BOTTLE))
-                .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), ResearchFormsLevelMenu(researchForm));
-                })
+                .display(getLevelStack())
+                .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), ResearchFormsLevelMenu(researchForm)))
                 .build();
-        GooeyButton forms = GooeyButton.builder().display(new ItemStack(PixelmonItems.rainbow_badge))
+        GooeyButton forms = GooeyButton.builder()
+                .display(getTasksStack())
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "ViewResearchTaskTitle").getString()))
-                .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), ResearchFormsTasksMenu(researchForm));
-                })
+                .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), ResearchFormsTasksMenu(researchForm)))
                 .build();
         template = ChestTemplate.builder(1)
                 .set(GUIConfig.getConfig().get().node("OptionMenu", "LevelsButtonPosition").getInt(), levels)
@@ -474,10 +718,8 @@ public class ResearchDex {
 
         GooeyButton back = GooeyButton.builder()
                 .title(Util.formattedString(LanguageConfig.getConfig().get().node("GUI", "BackButtonTitle").getString()))
-                .display(new ItemStack(PixelmonItems.eject_button))
-                .onClick(b -> {
-                    UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm));
-                })
+                .display(getBackButtonStack())
+                .onClick(b -> UIManager.openUIForcefully(b.getPlayer(), selectOptionMenu(researchForm)))
                 .build();
 
         Template template = null;

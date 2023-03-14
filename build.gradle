@@ -12,7 +12,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 group = 'io.github.adainish'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.3-SNAPSHOT'
 
 java {
     archivesBaseName = 'ResearchTasks'

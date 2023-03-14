@@ -11,11 +11,16 @@ import com.pixelmonmod.pixelmon.api.util.helpers.RandomHelper;
 import com.pixelmonmod.pixelmon.battles.attacks.ImmutableAttack;
 import io.github.adainish.researchtasks.ResearchTasks;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +38,15 @@ public class Util {
             .display(new ItemStack(Blocks.GRAY_STAINED_GLASS_PANE, 1))
             .build();
 
+    @Nullable
+    public static Item getItemFromString(String id) {
+
+        ResourceLocation location = new ResourceLocation(id);
+        if (ForgeRegistries.ITEMS.getValue(location).getItem() != null) {
+            return ForgeRegistries.ITEMS.getValue(location);
+        }
+        return null;
+    }
 
     public static String getResourceLocationStringFromItemStack(ItemStack stack)
     {

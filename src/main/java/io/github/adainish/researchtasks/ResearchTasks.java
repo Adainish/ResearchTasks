@@ -40,7 +40,7 @@ import java.io.File;
 public class ResearchTasks {
     public static ResearchTasks instance;
     public static final String MOD_NAME = "Research Tasks";
-    public static final String VERSION = "1.0.1-Beta";
+    public static final String VERSION = "1.0.3-Beta";
     public static final String AUTHORS = "Winglet";
     public static final String YEAR = "2023";
 
