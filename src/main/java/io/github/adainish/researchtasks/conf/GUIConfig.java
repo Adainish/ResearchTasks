@@ -42,6 +42,8 @@ public class GUIConfig extends Configurable
             this.get().node("Buttons", "NextPageButton").set("pixelmon:trade_holder_right");
 
             this.get().node("MainMenu", "Title").set("&6&lResearch Tasks");
+            this.get().node("MainMenu", "FilterButtonColourCode").set("e");
+            this.get().node("MainMenu", "FilterButtonLore").set("&bClick to filter through generation options");
             this.get().node("MainMenu", "PokemonColourCode").set("b");
             this.get().node("MainMenu", "PokemonLore").set(Arrays.asList("&7Click to view the research options for this Pokemon"));
             this.get().node("MainMenu", "PreviousButtonPosition").set(3);

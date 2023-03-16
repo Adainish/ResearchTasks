@@ -478,10 +478,15 @@ public class ResearchDex {
                 .linkType(LinkType.Next)
                 .build();
 
+        String typeArgColourCode = "&";
+        if (LanguageConfig.getConfig().get().node("MainMenu", "FilterButtonColourCode").getString() != null)
+            typeArgColourCode = typeArgColourCode + LanguageConfig.getConfig().get().node("MainMenu", "FilterButtonColourCode").getString();
+        else typeArgColourCode = "&7";
 
         GooeyButton typeArg = GooeyButton.builder()
                 .display(getFilterButtonStack())
-                .title(Util.formattedString("&7%type%".replaceAll("%type%", type.get())))
+                .title(Util.formattedString(typeArgColourCode + "%type%".replaceAll("%type%", type.get())))
+                .lore(Util.formattedArrayList(Arrays.asList(LanguageConfig.getConfig().get().node("MainMenu", "FilterButtonLore").getString())))
                 .onClick(buttonAction -> {
                     switch (type.get())
                     {
